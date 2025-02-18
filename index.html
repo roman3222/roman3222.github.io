@@ -3,11 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App</title>
+    <title>Запись на процедуры</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        label {
+            font-weight: bold;
         }
         button {
             padding: 10px 20px;
@@ -17,9 +25,24 @@
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать в Web App!</h1>
-    <p>Нажмите кнопку, чтобы отправить данные боту:</p>
-    <button id="sendDataButton">Отправить данные</button>
+    <h1>Запись на процедуры</h1>
+    <form id="appointmentForm">
+        <label for="procedure">Выберите процедуру:</label>
+        <select id="procedure" name="procedure" required>
+            <option value="">-- Выберите процедуру --</option>
+            <option value="massaz">Массаж</option>
+            <option value="manikyur">Маникюр</option>
+            <option value="pedikyur">Педикюр</option>
+        </select>
+
+        <label for="date">Выберите дату:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="time">Выберите время:</label>
+        <input type="time" id="time" name="time" required>
+
+        <button type="submit">Записаться</button>
+    </form>
 
     <script>
         // Проверяем, запущено ли приложение из Telegram
@@ -31,16 +54,35 @@
 
         const webApp = window.Telegram.WebApp;
 
-        // Обработчик кнопки
-        document.getElementById('sendDataButton').addEventListener('click', () => {
-            const data = 'Привет от Web App!';
-            webApp.sendData(data); // Отправляем данные боту
-            webApp.close(); // Закрываем веб-приложение
+        // Форма записи
+        const form = document.getElementById('appointmentForm');
+
+        // Обработчик отправки формы
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Предотвращаем стандартную отправку формы
+
+            // Собираем данные из формы
+            const procedure = form.procedure.value;
+            const date = form.date.value;
+            const time = form.time.value;
+
+            // Формируем JSON с данными
+            const data = {
+                procedure,
+                date,
+                time
+            };
+
+            // Отправляем данные боту
+            webApp.sendData(JSON.stringify(data));
+
+            // Закрываем веб-приложение
+            webApp.close();
         });
 
         // Опционально: изменение заголовка веб-приложения
         webApp.expand(); // Развернуть веб-приложение на весь экран
-        webApp.MainButton.setText('Готово'); // Изменить текст кнопки подтверждения
+        webApp.MainButton.setText('Записаться'); // Изменить текст кнопки подтверждения
         webApp.MainButton.show(); // Показать кнопку подтверждения
     </script>
 </body>
