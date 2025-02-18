@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать в Web App!</h1>
+    <p>Нажмите кнопку, чтобы отправить данные боту:</p>
+    <button id="sendDataButton">Отправить данные</button>
+
+    <script>
+        // Проверяем, запущено ли приложение из Telegram
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            alert('Это веб-приложение предназначено для использования в Telegram!');
+            document.body.innerHTML = 'Это веб-приложение предназначено для использования в Telegram!';
+            return;
+        }
+
+        const webApp = window.Telegram.WebApp;
+
+        // Обработчик кнопки
+        document.getElementById('sendDataButton').addEventListener('click', () => {
+            const data = 'Привет от Web App!';
+            webApp.sendData(data); // Отправляем данные боту
+            webApp.close(); // Закрываем веб-приложение
+        });
+
+        // Опционально: изменение заголовка веб-приложения
+        webApp.expand(); // Развернуть веб-приложение на весь экран
+        webApp.MainButton.setText('Готово'); // Изменить текст кнопки подтверждения
+        webApp.MainButton.show(); // Показать кнопку подтверждения
+    </script>
+</body>
+</html>
