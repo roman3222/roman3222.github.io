@@ -8,17 +8,17 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-image: url('background.jpg'); /* Путь к фоновой картинке */
-            background-size: cover; /* Растягиваем картинку на весь экран */
-            background-position: center; /* Центрируем картинку */
-            background-repeat: no-repeat; /* Запрещаем повторение картинки */
-            color: white; /* Изменяем цвет текста для лучшей читаемости */
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
         }
         form {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            background-color: rgba(0, 0, 0, 0.7); /* Добавляем полупрозрачный фон для формы */
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 10px;
         }
@@ -37,6 +37,20 @@
         button:hover {
             background-color: #0056b3;
         }
+        #timeList {
+            display: none; /* Скрываем список времени по умолчанию */
+            margin-top: 10px;
+        }
+        #timeList div {
+            padding: 5px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        #timeList div:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -53,24 +67,48 @@
         <label for="date">Выберите дату:</label>
         <input type="date" id="date" name="date" required>
 
-        <label for="time">Выберите время:</label>
-        <input type="time" id="time" name="time" required>
+        <!-- Список времени -->
+        <div id="timeList">
+            <div data-time="10:00">10:00</div>
+            <div data-time="11:00">11:00</div>
+            <div data-time="12:00">12:00</div>
+            <div data-time="13:00">13:00</div>
+            <div data-time="14:00">14:00</div>
+            <div data-time="15:00">15:00</div>
+        </div>
 
         <button type="submit">Записаться</button>
     </form>
 
     <script>
-<!--        // Проверяем, запущено ли приложение из Telegram-->
-<!--        if (!window.Telegram || !window.Telegram.WebApp) {-->
-<!--            alert('Это веб-приложение предназначено для использования в Telegram!');-->
-<!--            document.body.innerHTML = 'Это веб-приложение предназначено для использования в Telegram!';-->
-<!--            return;-->
-<!--        }-->
+        // Проверяем, запущено ли приложение из Telegram
+        if (!window.Telegram || !window.Telegram.WebApp) {
+            alert('Это веб-приложение предназначено для использования в Telegram!');
+            document.body.innerHTML = 'Это веб-приложение предназначено для использования в Telegram!';
+            return;
+        }
 
         const webApp = window.Telegram.WebApp;
 
-        // Форма записи
+        // Элементы формы
         const form = document.getElementById('appointmentForm');
+        const dateInput = document.getElementById('date');
+        const timeList = document.getElementById('timeList');
+
+        // Обработчик выбора даты
+        dateInput.addEventListener('change', () => {
+            // Показываем список времени при выборе даты
+            timeList.style.display = 'block';
+        });
+
+        // Обработчик выбора времени
+        timeList.addEventListener('click', (event) => {
+            if (event.target.tagName === 'DIV') {
+                const selectedTime = event.target.getAttribute('data-time');
+                alert(`Вы выбрали время: ${selectedTime}`);
+                // Можно сохранить выбранное время в скрытое поле или переменную
+            }
+        });
 
         // Обработчик отправки формы
         form.addEventListener('submit', (event) => {
@@ -79,7 +117,12 @@
             // Собираем данные из формы
             const procedure = form.procedure.value;
             const date = form.date.value;
-            const time = form.time.value;
+            const time = form.querySelector('#timeList div[data-time]')?.getAttribute('data-time'); // Получаем выбранное время
+
+            if (!time) {
+                alert('Пожалуйста, выберите время!');
+                return;
+            }
 
             // Формируем JSON с данными
             const data = {
